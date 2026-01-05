@@ -181,6 +181,18 @@ class BudgetNotFoundError(BudgetError):
         self.details['period'] = period
 
 
+class BudgetExistsError(BudgetError):
+    """Raised when a budget already exists for a category/period."""
+
+    def __init__(self, category: str, period: str = ""):
+        message = f"Budget already exists for category: {category}"
+        if period:
+            message += f" in period: {period}"
+        super().__init__(message, category)
+        self.period = period
+        self.details['period'] = period
+
+
 class ExportError(ExpenseError):
     """Raised when export operation fails."""
 

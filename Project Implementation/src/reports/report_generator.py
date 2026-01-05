@@ -54,15 +54,15 @@ class ReportGenerator:
         """
         if not expenses:
             return StatisticalSummary(
+                period_start=datetime.now(),
+                period_end=datetime.now(),
                 total_amount=0.0,
                 average_amount=0.0,
                 min_amount=0.0,
                 max_amount=0.0,
                 expense_count=0,
-                category_totals={},
-                payment_method_totals={},
-                date_from=None,
-                date_to=None
+                by_category={},
+                by_payment_method={}
             )
 
         amounts = [e.amount for e in expenses]
@@ -79,15 +79,15 @@ class ReportGenerator:
             payment_totals[expense.payment_method] += expense.amount
 
         return StatisticalSummary(
+            period_start=min(dates) if dates else datetime.now(),
+            period_end=max(dates) if dates else datetime.now(),
             total_amount=sum(amounts),
             average_amount=np.mean(amounts) if amounts else 0.0,
             min_amount=min(amounts) if amounts else 0.0,
             max_amount=max(amounts) if amounts else 0.0,
             expense_count=len(expenses),
-            category_totals=dict(category_totals),
-            payment_method_totals=dict(payment_totals),
-            date_from=min(dates) if dates else None,
-            date_to=max(dates) if dates else None,
+            by_category=dict(category_totals),
+            by_payment_method=dict(payment_totals),
             median_amount=float(np.median(amounts)) if amounts else 0.0,
             std_deviation=float(np.std(amounts)) if len(amounts) > 1 else 0.0
         )

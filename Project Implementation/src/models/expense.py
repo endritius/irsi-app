@@ -8,17 +8,41 @@ from typing import Optional, List, Dict, Any
 import uuid
 
 
-def parse_date(date_str: str) -> Optional[datetime]:
-    """Parse date string to datetime."""
-    if not date_str:
+def parse_date(date_value) -> Optional[datetime]:
+    """Parse date string or datetime to datetime."""
+    if date_value is None:
         return None
-    try:
-        return datetime.strptime(date_str, '%Y-%m-%d')
-    except ValueError:
+
+    # Already a datetime
+    if isinstance(date_value, datetime):
+        return date_value
+
+    # Handle pandas Timestamp
+    if hasattr(date_value, 'to_pydatetime'):
+        return date_value.to_pydatetime()
+
+    # Convert to string if needed
+    date_str = str(date_value).strip()
+    if not date_str or date_str.lower() in ('nan', 'nat', 'none', ''):
+        return None
+
+    # Try various date formats
+    formats = [
+        '%Y-%m-%d',
+        '%d/%m/%Y',
+        '%Y-%m-%d %H:%M:%S',
+        '%d/%m/%Y %H:%M:%S',
+        '%Y/%m/%d',
+        '%m/%d/%Y'
+    ]
+
+    for fmt in formats:
         try:
-            return datetime.strptime(date_str, '%d/%m/%Y')
+            return datetime.strptime(date_str, fmt)
         except ValueError:
-            return None
+            continue
+
+    return None
 
 
 @dataclass

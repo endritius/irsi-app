@@ -111,8 +111,7 @@ class BudgetManager:
         if existing:
             raise BudgetExistsError(
                 budget.category,
-                budget.period_start,
-                budget.period_end
+                budget.period_display if hasattr(budget, 'period_display') else str(budget.period_start)
             )
 
         # Add to cache

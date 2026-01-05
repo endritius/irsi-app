@@ -48,6 +48,11 @@ class Budget:
     notes: str = ""
     is_active: bool = True
 
+    # Runtime tracking (not persisted, set by BudgetManager)
+    spent: float = 0.0
+    rollover_amount: float = 0.0
+    allow_rollover: bool = False  # Alias for rollover_enabled
+
     # Timestamps
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
@@ -60,11 +65,23 @@ class Budget:
         self.rollover_cap_percent = float(self.rollover_cap_percent)
         self.previous_rollover = float(self.previous_rollover)
 
-        if isinstance(self.period_start, str):
+        # Sync allow_rollover with rollover_enabled
+        self.allow_rollover = self.rollover_enabled
+
+        # Handle date parsing for period_start
+        if self.period_start is None:
+            self.period_start = datetime.now().replace(day=1)
+        elif isinstance(self.period_start, str):
             try:
                 self.period_start = datetime.strptime(self.period_start, '%Y-%m-%d')
             except ValueError:
-                self.period_start = datetime.now().replace(day=1)
+                try:
+                    self.period_start = datetime.strptime(self.period_start, '%d/%m/%Y')
+                except ValueError:
+                    self.period_start = datetime.now().replace(day=1)
+        elif hasattr(self.period_start, 'to_pydatetime'):
+            # Handle pandas Timestamp
+            self.period_start = self.period_start.to_pydatetime()
 
     @property
     def period_end(self) -> datetime:
@@ -100,6 +117,16 @@ class Budget:
         if self.rollover_enabled:
             return self.amount + self.previous_rollover
         return self.amount
+
+    def get_used_percentage(self) -> float:
+        """Get percentage of budget used."""
+        if self.amount <= 0:
+            return 0.0
+        return (self.spent / self.amount * 100)
+
+    def get_remaining(self) -> float:
+        """Get remaining budget amount."""
+        return self.effective_budget - self.spent
 
     def calculate_rollover(self, spent: float) -> float:
         """
