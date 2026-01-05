@@ -86,20 +86,25 @@ class ExpenseFormView(ttk.Frame):
 
         self.date_var = tk.StringVar(value=datetime.now().strftime('%d/%m/%Y'))
         self.date_entry = ttk.Entry(date_frame, textvariable=self.date_var, width=15)
-        self.date_entry.pack(side=tk.LEFT)
+        self.date_picker = None
 
         try:
             from tkcalendar import DateEntry
             self.date_picker = DateEntry(
                 date_frame,
-                textvariable=self.date_var,
                 date_pattern='dd/mm/yyyy',
-                width=12
+                width=15,
+                background='darkblue',
+                foreground='white',
+                borderwidth=2
             )
-            self.date_picker.pack(side=tk.LEFT, padx=(5, 0))
-            self.date_entry.pack_forget()  # Hide manual entry
+            self.date_picker.set_date(datetime.now())
+            self.date_picker.pack(side=tk.LEFT)
+            # Update StringVar when date changes
+            self.date_picker.bind('<<DateEntrySelected>>', self._on_date_selected)
         except ImportError:
             # Calendar not available, use manual entry
+            self.date_entry.pack(side=tk.LEFT)
             ttk.Label(date_frame, text="(DD/MM/YYYY)", style='Muted.TLabel').pack(side=tk.LEFT, padx=5)
 
         # Vendor
@@ -155,11 +160,8 @@ class ExpenseFormView(ttk.Frame):
 
     def _create_additional_fields(self, parent):
         """Create additional option fields."""
-        # Tags
-        self._create_field(parent, "Tags (comma separated)", "tags")
+        # Initialize tags_var for internal use (not displayed)
         self.tags_var = tk.StringVar()
-        self.tags_entry = ttk.Entry(parent, textvariable=self.tags_var)
-        self.tags_entry.pack(fill=tk.X, padx=PADDING['medium'], pady=(0, PADDING['medium']))
 
         # Recurring expense
         recurring_frame = ttk.LabelFrame(parent, text="Recurring Expense")
@@ -191,27 +193,6 @@ class ExpenseFormView(ttk.Frame):
 
         # Initially hide recurring options
         self.recurring_options.pack_forget()
-
-        # Quick templates
-        templates_frame = ttk.LabelFrame(parent, text="Quick Templates")
-        templates_frame.pack(fill=tk.X, padx=PADDING['medium'], pady=PADDING['medium'])
-
-        templates = self.main_window.template_manager.get_top_templates(5)
-
-        if templates:
-            for template in templates:
-                btn = ttk.Button(
-                    templates_frame,
-                    text=template.name,
-                    command=lambda t=template: self._apply_template(t)
-                )
-                btn.pack(fill=tk.X, padx=PADDING['small'], pady=2)
-        else:
-            ttk.Label(
-                templates_frame,
-                text="No templates available",
-                style='Muted.TLabel'
-            ).pack(padx=PADDING['small'], pady=PADDING['small'])
 
         # Duplicate warning area
         self.warning_frame = ttk.Frame(parent)
@@ -259,6 +240,12 @@ class ExpenseFormView(ttk.Frame):
         else:
             self.recurring_options.pack_forget()
 
+    def _on_date_selected(self, event=None):
+        """Handle date selection from date picker."""
+        if self.date_picker:
+            selected_date = self.date_picker.get_date()
+            self.date_var.set(selected_date.strftime('%d/%m/%Y'))
+
     def _on_category_change(self, event):
         """Handle category selection change."""
         category = self.category_var.get()
@@ -297,6 +284,8 @@ class ExpenseFormView(ttk.Frame):
 
         self.amount_var.set(str(expense.amount))
         self.date_var.set(expense.date.strftime('%d/%m/%Y'))
+        if self.date_picker:
+            self.date_picker.set_date(expense.date)
         self.vendor_var.set(expense.vendor)
         self.category_var.set(expense.category)
         self._on_category_change(None)
@@ -312,7 +301,7 @@ class ExpenseFormView(ttk.Frame):
         self.is_recurring_var.set(expense.is_recurring)
         if expense.is_recurring:
             self._toggle_recurring()
-            self.frequency_var.set(expense.recurring_frequency or 'monthly')
+            self.frequency_var.set(expense.recurring_type or 'monthly')
 
     def _validate_form(self) -> Optional[Expense]:
         """Validate form and create expense object."""
@@ -329,9 +318,12 @@ class ExpenseFormView(ttk.Frame):
 
         # Date
         try:
-            date_str = self.date_var.get()
-            date = datetime.strptime(date_str, '%d/%m/%Y')
-        except ValueError:
+            if self.date_picker:
+                date = datetime.combine(self.date_picker.get_date(), datetime.min.time())
+            else:
+                date_str = self.date_var.get()
+                date = datetime.strptime(date_str, '%d/%m/%Y')
+        except (ValueError, Exception):
             errors.append("Invalid date format (use DD/MM/YYYY)")
             date = datetime.now()
 
@@ -364,7 +356,7 @@ class ExpenseFormView(ttk.Frame):
             description=description,
             tags=tags,
             is_recurring=self.is_recurring_var.get(),
-            recurring_frequency=self.frequency_var.get() if self.is_recurring_var.get() else None
+            recurring_type=self.frequency_var.get() if self.is_recurring_var.get() else None
         )
 
         if self.is_edit:

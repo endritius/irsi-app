@@ -74,9 +74,13 @@ class ReportsView(ttk.Frame):
         ttk.Label(period_frame, text="Period:").pack(side=tk.LEFT)
 
         now = datetime.now()
-        months = [(now.replace(month=i if i <= 12 else i-12, year=now.year if i <= 12 else now.year-1).strftime('%B %Y'), i)
-                  for i in range(now.month, now.month-12, -1)]
-        month_names = [m[0] for m in months]
+        # Generate last 12 months correctly
+        from dateutil.relativedelta import relativedelta
+        months = []
+        for i in range(12):
+            month_date = now - relativedelta(months=i)
+            months.append(month_date.strftime('%B %Y'))
+        month_names = months
 
         self.period_var = tk.StringVar(value=month_names[0])
         period_combo = ttk.Combobox(

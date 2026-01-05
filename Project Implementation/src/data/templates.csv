@@ -1,1 +1,13 @@
 template_id,name,category,subcategory,vendor,typical_amount,payment_method,description,tags,use_count,last_used,created_at
+tpl-001,Monthly Rent,Facilities,Rent,Property Owner,50000,Bank Transfer,Monthly salon rent payment,rent,0,,2024-01-01 00:00:00
+tpl-002,Electricity Bill,Facilities,Electricity,OSHEE,15000,Bank Transfer,Monthly electricity bill,utilities,0,,2024-01-01 00:00:00
+tpl-003,Water Bill,Facilities,Water,UKT Tirana,3000,Bank Transfer,Monthly water bill,utilities,0,,2024-01-01 00:00:00
+tpl-004,Internet Service,Facilities,Internet,Abcom,5000,Bank Transfer,Monthly internet service,internet,0,,2024-01-01 00:00:00
+tpl-005,Hair Color Products,Supplies,Hair products,L'Oreal Distributor,25000,Credit Card,Professional hair color products,supplies,0,,2024-01-01 00:00:00
+tpl-006,Shampoo & Conditioner,Supplies,Hair products,Wella Distributor,15000,Cash,Salon shampoo and conditioner,supplies,0,,2024-01-01 00:00:00
+tpl-007,Nail Polish Set,Supplies,Nail products,OPI Distributor,10000,Credit Card,Professional nail polish set,supplies,0,,2024-01-01 00:00:00
+tpl-008,Disposable Towels,Supplies,Disposables,Hygiene Supply Co,5000,Cash,Disposable towels for salon,disposables,0,,2024-01-01 00:00:00
+tpl-009,Cleaning Supplies,Supplies,Cleaning,Metro Market,3000,Cash,General cleaning supplies,cleaning,0,,2024-01-01 00:00:00
+tpl-010,Staff Salary,Staff,Salaries,Staff Payroll,80000,Bank Transfer,Monthly staff salary payment,payroll,0,,2024-01-01 00:00:00
+tpl-011,Social Media Ads,Marketing,Social media,Facebook Ads,10000,Credit Card,Monthly social media advertising,marketing,0,,2024-01-01 00:00:00
+tpl-012,Business License,Administrative,Licenses,Municipality,5000,Bank Transfer,Annual business license renewal,license,0,,2024-01-01 00:00:00

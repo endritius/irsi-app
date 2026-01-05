@@ -32,7 +32,7 @@ class ExportDialog(tk.Toplevel):
         self.result = None
 
         self.title("Export Data")
-        self.geometry("500x550")
+        self.geometry("500x650")
         self.resizable(False, False)
         self.transient(parent)
         self.grab_set()
