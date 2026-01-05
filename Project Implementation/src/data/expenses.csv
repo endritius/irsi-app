@@ -1,0 +1,1 @@
+expense_id,amount,date,category,subcategory,vendor,payment_method,description,tags,is_recurring,recurring_type,recurring_action,next_due_date,last_recurring_date,recurring_parent_id,is_deleted,deleted_at,created_at,updated_at

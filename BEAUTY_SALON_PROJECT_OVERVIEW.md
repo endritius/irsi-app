@@ -4,7 +4,21 @@
 
 A Python application designed to help beauty salon owners and managers track, analyze, and optimize their business expenses. The application enables users to record expenses across salon-specific categories, set budgets, monitor spending patterns, and generate insightful reports to improve financial decision-making.
 
-**Technology Stack:** Python 3.x, NumPy, Pandas, Matplotlib/Seaborn
+**Technology Stack:** Python 3.x, NumPy, Pandas, Matplotlib/Seaborn, Tkinter
+
+---
+
+## Configuration Decisions
+
+| Setting | Decision |
+|---------|----------|
+| **User Interface** | GUI with Tkinter |
+| **Currency** | ALL (Albanian Lek) - symbol: L |
+| **Date Format** | DD/MM/YYYY |
+| **Budget Period** | Calendar month (1st to end of month) |
+| **Payment Methods** | Cash, Debit Card, Credit Card, Bank Transfer |
+| **Recurring Expenses** | User chooses per expense: auto-generate OR reminder only |
+| **Locations** | Single salon location |
 
 ---
 
@@ -227,6 +241,7 @@ Using NumPy for calculations:
 
 6.2 **Trend Visualization**
 - Line chart: Monthly expense trend
+- Line chart: Yearly expense trend with year-over-year comparison
 - Area chart: Cumulative spending over time
 - Multi-line for category comparison
 
@@ -328,6 +343,50 @@ Using NumPy for calculations:
 
 ---
 
+## Epic 9: Error Handling & Validation
+
+**Goal:** Ensure the application handles errors gracefully and validates all user inputs.
+
+### User Stories
+
+9.1 **Input Validation**
+- Validate expense amount (positive numbers, reasonable range)
+- Validate date format (consistent format, not future dates for expenses)
+- Validate category (must exist in predefined list)
+- Validate payment method (must be valid option)
+- Validate required fields are not empty
+
+9.2 **File Error Handling**
+- Handle missing CSV files gracefully (create with defaults)
+- Handle malformed/corrupted CSV files (report error, offer recovery)
+- Handle file permission errors (read-only, locked files)
+- Handle disk space issues during save
+
+9.3 **Data Integrity Errors**
+- Handle duplicate expense IDs
+- Handle invalid data types in loaded files
+- Handle missing required columns in CSV
+- Validate data consistency on load
+
+9.4 **User Feedback**
+- Display clear, actionable error messages
+- Log errors for debugging (with timestamps)
+- Provide recovery suggestions where possible
+- Confirmation prompts for destructive actions
+
+9.5 **Graceful Degradation**
+- Continue operation when non-critical errors occur
+- Partial data recovery from corrupted files
+- Fallback defaults when configuration is invalid
+
+### Deliverables
+- [ ] `utils/validators.py` - Input validation functions
+- [ ] `utils/error_handler.py` - Centralized error handling
+- [ ] `logs/` - Error logging directory
+- [ ] Custom exception classes for domain-specific errors
+
+---
+
 ## Technical Architecture
 
 ### Class Structure (OOP)
@@ -344,19 +403,32 @@ Using NumPy for calculations:
 ├── reports/
 │   └── report_generator.py # Statistical reports
 ├── visualization/
-│   └── visualizer.py       # Charts and dashboards
+│   └── visualizer.py       # Charts and dashboards (Matplotlib/Seaborn)
 ├── persistence/
 │   └── data_manager.py     # File I/O
 ├── exports/
-│   ├── pdf_exporter.py
-│   ├── excel_exporter.py
-│   └── image_exporter.py
+│   ├── pdf_exporter.py     # ReportLab PDF generation
+│   ├── excel_exporter.py   # openpyxl Excel export
+│   └── image_exporter.py   # Chart image export
+├── ui/                     # Tkinter GUI components
+│   ├── main_window.py      # Main application window
+│   ├── expense_form.py     # Add/Edit expense dialog
+│   ├── expense_list.py     # Expense list with filters
+│   ├── budget_view.py      # Budget management view
+│   ├── reports_view.py     # Reports interface
+│   ├── dashboard.py        # Dashboard with KPIs and charts
+│   └── dialogs.py          # Common dialogs (confirm, error, etc.)
 ├── utils/
-│   └── validators.py       # Input validation
+│   ├── validators.py       # Input validation
+│   ├── error_handler.py    # Centralized error handling
+│   ├── exceptions.py       # Custom exception classes
+│   └── formatters.py       # Currency, date formatting
 ├── data/
 │   ├── expenses.csv
 │   ├── budgets.csv
-│   └── settings.csv
+│   └── settings.json
+├── logs/                   # Error and activity logs
+├── config.py               # Application constants
 └── main.py                 # Application entry point
 ```
 
@@ -368,6 +440,22 @@ Using NumPy for calculations:
 | **Pandas** | DataFrame operations, filtering, grouping, CSV I/O |
 | **Matplotlib** | Bar charts, line charts, pie charts |
 | **Seaborn** | Enhanced visualizations, color palettes |
+| **Tkinter** | GUI framework (built-in) |
+| **tkcalendar** | Date picker widget |
+| **ReportLab** | PDF report generation |
+| **openpyxl** | Excel file export |
+| **Pillow** | Image processing for chart export |
+
+### Data Structures
+
+| Structure | Usage | Example |
+|-----------|-------|---------|
+| **Lists** | Ordered collections of expenses, categories, filter results | `expenses_list = [expense1, expense2, ...]` |
+| **Dictionaries** | Key-value mappings for categories, settings, lookups | `categories = {"Supplies": ["Hair", "Nails"], ...}` |
+| **Pandas DataFrame** | Primary in-memory storage for expense data, filtering, grouping, aggregation | `df = pd.DataFrame(expenses)` |
+| **NumPy Arrays** | Numerical calculations on expense amounts | `amounts = np.array(df['amount'])` |
+| **Sets** | Unique tags, vendors, payment methods for dropdowns | `unique_vendors = set(df['vendor'])` |
+| **Tuples** | Immutable data like date ranges, min/max pairs | `date_range = (start_date, end_date)` |
 
 ---
 
@@ -376,13 +464,14 @@ Using NumPy for calculations:
 | Priority | Epic | Rationale |
 |----------|------|-----------|
 | 1 | Epic 1: Core Data Models | Foundation for all other features |
-| 2 | Epic 2: CRUD Operations | Essential functionality |
-| 3 | Epic 7: Data Persistence | Required for usable application |
-| 4 | Epic 3: Filtering & Sorting | Core usability feature |
-| 5 | Epic 4: Budget Tracking | Key business value feature |
-| 6 | Epic 5: Reporting | Business insights |
-| 7 | Epic 6: Visualizations | Enhanced analytics |
-| 8 | Epic 8: Export | Nice-to-have for sharing |
+| 2 | Epic 9: Error Handling | Integrated early to ensure robust foundation |
+| 3 | Epic 2: CRUD Operations | Essential functionality |
+| 4 | Epic 7: Data Persistence | Required for usable application |
+| 5 | Epic 3: Filtering & Sorting | Core usability feature |
+| 6 | Epic 4: Budget Tracking | Key business value feature |
+| 7 | Epic 5: Reporting | Business insights |
+| 8 | Epic 6: Visualizations | Enhanced analytics |
+| 9 | Epic 8: Export | Nice-to-have for sharing |
 
 ---
 

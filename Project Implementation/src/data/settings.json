@@ -1,0 +1,39 @@
+{
+    "general": {
+        "salon_name": "Beauty Salon",
+        "salon_address": "",
+        "date_format": "DD/MM/YYYY",
+        "currency_symbol": "L",
+        "language": "en"
+    },
+    "backup": {
+        "auto_backup": true,
+        "backup_location": "backups",
+        "retention_days": 30,
+        "max_backups": 10
+    },
+    "alerts": {
+        "warning_threshold": 80,
+        "critical_threshold": 95,
+        "show_notifications": true,
+        "show_recurring_reminders": true
+    },
+    "display": {
+        "theme": "default",
+        "default_view": "expenses",
+        "page_size": 50,
+        "show_deleted": false,
+        "compact_mode": false
+    },
+    "data": {
+        "auto_save": true,
+        "duplicate_detection": true,
+        "duplicate_threshold_days": 7,
+        "confirm_delete": true
+    },
+    "reports": {
+        "default_period": "monthly",
+        "include_charts": true,
+        "chart_style": "seaborn"
+    }
+}
