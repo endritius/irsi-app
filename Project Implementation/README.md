@@ -1,5 +1,71 @@
 # Beauty Salon Expense Manager - Project Implementation
 
+## Installation Guide (Windows)
+
+### Prerequisites
+- Python 3.10 or higher installed ([Download Python](https://www.python.org/downloads/))
+- During Python installation, check "Add Python to PATH"
+
+### Step-by-Step Installation
+
+1. **Open Command Prompt**
+   ```
+   Press Win + R, type "cmd", press Enter
+   ```
+
+2. **Navigate to the project folder**
+   ```cmd
+   cd path\to\Project Implementation
+   ```
+
+3. **Create a virtual environment**
+   ```cmd
+   python -m venv venv
+   ```
+
+4. **Activate the virtual environment**
+   ```cmd
+   venv\Scripts\activate
+   ```
+   You should see `(venv)` appear at the beginning of your command line.
+
+5. **Install dependencies**
+   ```cmd
+   pip install -r requirements.txt
+   ```
+
+6. **Run the application**
+   ```cmd
+   python main.py
+   ```
+
+### Deactivating the Virtual Environment
+
+When you're done using the application:
+```cmd
+deactivate
+```
+
+### Running the App Again
+
+After initial setup, you only need to:
+```cmd
+cd path\to\Project Implementation
+venv\Scripts\activate
+python main.py
+```
+
+### Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `python` not recognized | Reinstall Python with "Add to PATH" checked |
+| `pip` not found | Run `python -m pip install -r requirements.txt` |
+| Tkinter import error | Reinstall Python with tcl/tk option selected |
+| Permission denied | Run Command Prompt as Administrator |
+
+---
+
 ## Quick Reference
 
 | Setting | Value |
