@@ -415,7 +415,7 @@ class BudgetDialog(tk.Toplevel):
             self.end_var.set(budget.period_end.strftime('%d/%m/%Y'))
             if budget.notes:
                 self.notes_text.insert('1.0', budget.notes)
-            self.rollover_var.set(budget.allow_rollover)
+            self.rollover_var.set(budget.rollover_enabled)
 
     def _save(self):
         """Save budget."""
@@ -432,14 +432,23 @@ class BudgetDialog(tk.Toplevel):
 
             notes = self.notes_text.get('1.0', tk.END).strip()
 
+            # Determine period_type from date range
+            days_diff = (end - start).days
+            if days_diff <= 35:
+                period_type = 'monthly'
+            elif days_diff <= 100:
+                period_type = 'quarterly'
+            else:
+                period_type = 'yearly'
+
             if self.mode == 'add':
                 budget = Budget(
                     category=self.category_var.get(),
                     amount=amount,
+                    period_type=period_type,
                     period_start=start,
-                    period_end=end,
                     notes=notes,
-                    allow_rollover=self.rollover_var.get()
+                    rollover_enabled=self.rollover_var.get()
                 )
                 self.main_window.budget_manager.add_budget(budget)
                 self.main_window.set_status("Budget added")
@@ -448,10 +457,10 @@ class BudgetDialog(tk.Toplevel):
                     self.budget_id,
                     {
                         'amount': amount,
+                        'period_type': period_type,
                         'period_start': start,
-                        'period_end': end,
                         'notes': notes,
-                        'allow_rollover': self.rollover_var.get()
+                        'rollover_enabled': self.rollover_var.get()
                     }
                 )
                 self.main_window.set_status("Budget updated")

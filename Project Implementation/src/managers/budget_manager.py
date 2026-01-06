@@ -561,12 +561,11 @@ class BudgetManager:
         new_budget = Budget(
             category=budget.category,
             amount=budget.amount,
+            period_type=budget.period_type,
             period_start=next_start,
-            period_end=next_end,
-            spent=0.0,
             notes=budget.notes,
-            allow_rollover=budget.allow_rollover,
-            rollover_amount=rollover
+            rollover_enabled=budget.rollover_enabled,
+            previous_rollover=rollover
         )
 
         return new_budget

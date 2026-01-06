@@ -106,9 +106,10 @@ class Expense:
         # Ensure amount is float
         self.amount = float(self.amount)
 
-        # Ensure date is datetime
-        if isinstance(self.date, str):
-            self.date = parse_date(self.date) or datetime.now()
+        # Ensure date is datetime - handle all possible input types
+        if not isinstance(self.date, datetime):
+            parsed = parse_date(self.date)
+            self.date = parsed if parsed else datetime.now()
 
         # Ensure tags is a list
         if isinstance(self.tags, str):
